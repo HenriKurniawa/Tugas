@@ -1,0 +1,156 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+struct Node
+{
+    struct Node *prev;
+    int data;
+    struct Node *next;
+};
+
+typedef struct Node node;
+
+node *pHead = NULL;
+node *pTail = NULL;
+
+node *alokasiNodeBaru()
+{
+    node *pNew = NULL;
+    pNew = (node *)malloc(sizeof(node));
+    return (pNew);
+}
+
+void insert(int data)
+{
+    node *pNew = alokasiNodeBaru();
+
+    if (pNew == NULL)
+    {
+        printf("\n[ALOKASI GAGAL]");
+    }
+    else
+    {
+        pNew->data = data;
+        pNew->prev = NULL;
+        pNew->next = NULL;
+
+        if (pHead == NULL)
+        {
+            pHead = pNew;
+            pTail = pNew;
+            pHead->next = pHead;
+            pHead->prev = pHead;
+        }
+        else
+        {
+            pNew->prev = pTail;
+            pNew->next = pHead;
+            pTail->next = pNew;
+            pHead->prev = pNew;
+            pTail = pNew;
+        }
+    }
+}
+
+void view()
+{
+    node *pWalker = pHead;
+    int i = 1;
+
+    if (pWalker == NULL)
+    {
+        printf("\n[DATA KOSONG]");
+    }
+    else
+    {
+        printf("\n");
+        while (pWalker != pTail)
+        {
+            printf("%d ", pWalker->data);
+            i++;
+            pWalker = pWalker->next;
+        }
+        printf("%d ", pWalker->data);
+    }
+    printf("\n");
+}
+
+void sortNode(node *pWalker, node *pWalkerNext)
+{
+    node *temp = NULL;
+
+    if (pWalker->data > pWalkerNext->data)
+    {
+        if (pWalker == pHead)
+        {
+            pHead = pWalkerNext;
+        }
+        if (pWalkerNext == pTail)
+        {
+            pTail = pWalker;
+        }
+
+        if (pWalker->prev != NULL)
+        {
+            pWalker->prev->next = pWalkerNext;
+        }
+        if (pWalkerNext->next != NULL)
+        {
+            pWalkerNext->next->prev = pWalker;
+        }
+
+        temp = pWalkerNext->next;
+        pWalkerNext->next = pWalker;
+        pWalkerNext->prev = pWalker->prev;
+        pWalker->next = temp;
+        pWalker->prev = pWalkerNext;
+    }
+}
+
+void viewWithAddress()
+{
+    node *pWalker = pHead;
+    int i = 1;
+
+    if (pWalker == NULL)
+    {
+        printf("\n[DATA KOSONG]");
+    }
+    else
+    {
+        printf("\n");
+        while (pWalker != pTail)
+        {
+            printf("Address: %p | Data: %d\n ", pWalker, pWalker->data);
+            i++;
+            pWalker = pWalker->next;
+        }
+        printf("Address: %p | Data: %d\n ", pWalker, pWalker->data);
+    }
+    printf("\n");
+}
+
+int main()
+{
+    node *pNew = NULL;
+    int numOfData, data;
+
+    printf("Masukkan jumlah data: ");
+    scanf("%d", &numOfData);
+    for (int i = 0; i < numOfData; i++)
+    {
+        printf("Masukkan data ke-%d: ", i + 1);
+        scanf("%d", &data);
+        insert(data);
+    }
+
+    printf("\nData awal: ");
+    viewWithAddress();
+    printf("\nData setelah diurutkan: ");
+    sortNode(pHead, pHead->next);
+    viewWithAddress();
+
+    return 0;
+}
